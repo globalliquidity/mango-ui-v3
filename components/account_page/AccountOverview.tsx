@@ -180,6 +180,18 @@ export default function AccountOverview() {
       ? '#F84638'
       : '#CC2929'
 
+  const renderPnlChartTitle = () => {
+    if (showPerpPnl && showSpotPnl) {
+      return t('total-pnl')
+    }
+    if (!showSpotPnl) {
+      return `${t('perp')} PnL`
+    }
+    if (!showPerpPnl) {
+      return `${t('spot')} PnL`
+    }
+  }
+
   return mangoAccount ? (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4">
@@ -231,7 +243,10 @@ export default function AccountOverview() {
             )} */}
           </div>
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
-            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">PnL</div>
+            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+              {t('total-pnl')}{' '}
+              <span className="text-th-fgd-4">({t('all-time')})</span>
+            </div>
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
               {chartData.length > 0 ? (
                 formatUsdValue(chartData[chartData.length - 1]['pnl'])
@@ -318,7 +333,9 @@ export default function AccountOverview() {
             <div className="flex justify-between pb-9">
               <div>
                 <div className="pb-0.5 text-sm text-th-fgd-3">
-                  {chartToShow === 'Value' ? t('account-value') : chartToShow}{' '}
+                  {chartToShow === 'Value'
+                    ? t('account-value')
+                    : renderPnlChartTitle()}{' '}
                   <span className="text-th-fgd-4">
                     {performanceRange === 'All'
                       ? `(${t('all-time')})`

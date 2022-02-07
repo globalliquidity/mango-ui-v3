@@ -65,6 +65,7 @@ export default function Account() {
   const [showAlertsModal, setShowAlertsModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [resetOnLeave, setResetOnLeave] = useState(false)
+  const [mngoAccrued, setMngoAccrued] = useState(ZERO_BN)
   const connected = useMangoStore(walletConnectedSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
   const mangoClient = useMangoStore((s) => s.connection.client)
@@ -162,12 +163,14 @@ export default function Account() {
     setActiveTab(tabName)
   }
 
-  const mngoAccrued = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
-          return perpAcct.mngoAccrued.add(acc)
-        }, ZERO_BN)
-      : ZERO_BN
+  useMemo(() => {
+    setMngoAccrued(
+      mangoAccount
+        ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
+            return perpAcct.mngoAccrued.add(acc)
+          }, ZERO_BN)
+        : ZERO_BN
+    )
   }, [mangoAccount])
 
   const handleRedeemMngo = async () => {
@@ -185,6 +188,7 @@ export default function Account() {
         mngoNodeBank.vault
       )
       actions.reloadMangoAccount()
+      setMngoAccrued(ZERO_BN)
       notify({
         title: t('redeem-success'),
         description: '',
@@ -238,35 +242,35 @@ export default function Account() {
                 </div>
               </div>
               {!pubkey ? (
-                <div className="flex items-center pb-1.5 space-x-2">
-                  {/* {!mngoAccrued.eq(ZERO_BN) ? ( */}
+                <div className="flex flex-col sm:flex-row items-center pb-1.5 space-y-2 sm:space-y-0 sm:space-x-2">
                   <button
-                    className="bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                    className="bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
                     disabled={mngoAccrued.eq(ZERO_BN)}
                     onClick={handleRedeemMngo}
                   >
-                    <div className="flex items-center">
-                      <GiftIcon className="h-4 w-4 mr-1.5" />
+                    <div className="flex items-center whitespace-nowrap">
+                      <GiftIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
                       {!mngoAccrued.eq(ZERO_BN)
                         ? `Claim ${nativeToUi(
                             mngoAccrued.toNumber(),
                             mangoGroup.tokens[MNGO_INDEX].decimals
-                          ).toFixed(3)} MNGO`
+                          ).toLocaleString(undefined, {
+                            minimumSignificantDigits: 1,
+                          })} MNGO`
                         : '0 MNGO Rewards'}
                     </div>
                   </button>
-                  {/* ) : null} */}
                   <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
                     onClick={() => setShowCloseAccountModal(true)}
                   >
-                    <div className="flex items-center">
-                      <TrashIcon className="h-4 w-4 mr-1.5" />
+                    <div className="flex items-center whitespace-nowrap">
+                      <TrashIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
                       {t('close-account:close-account')}
                     </div>
                   </Button>
                   <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
                     onClick={() => setShowAlertsModal(true)}
                   >
                     <div className="flex items-center">
