@@ -95,6 +95,7 @@
   "daily-change": "Cambio diario",
   "daily-range": "Rango diario",
   "daily-volume": "Volumen de 24 horas",
+  "delayed-info": "Data updates hourly",
   "dark": "Oscura",
   "data-refresh-tip-desc": "Los datos se actualizan automáticamente, pero puede actualizarlos manualmente aquí.",
   "data-refresh-tip-title": "Actualización manual de datos",

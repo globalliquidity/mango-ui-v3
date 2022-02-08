@@ -95,6 +95,7 @@
   "daily-change": "Daily Change",
   "daily-range": "Daily Range",
   "daily-volume": "24hr Volume",
+  "delayed-info": "Data updates hourly",
   "dark": "Dark",
   "data-refresh-tip-desc": "Data is refreshed automatically but you can manually refresh it here.",
   "data-refresh-tip-title": "Manual Data Refresh",

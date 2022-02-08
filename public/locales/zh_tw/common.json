@@ -95,6 +95,7 @@
   "daily-change": "24小時變動",
   "daily-range": "24小時廣度",
   "daily-volume": "24小時成交量",
+  "delayed-info": "Data updates hourly",
   "dark": "黑暗",
   "data-refresh-tip-desc": "雖然數據會自動更新，但您還是可以點擊手動更新。",
   "data-refresh-tip-title": "手動數據更新",
