@@ -52,6 +52,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   async function copyToClipboard(image) {
     try {
       image.toBlob((blob) => {
+        // @ts-ignore
         navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
       }, 'image/png')
     } catch (error) {
