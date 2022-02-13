@@ -12,6 +12,7 @@ import LanguageSwitch from './LanguageSwitch'
 import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
+import TradeNavMenu from './TradeNavMenu'
 
 // const StyledNewLabel = ({ children, ...props }) => (
 //   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
@@ -35,8 +36,8 @@ const TopBar = () => {
 
   return (
     <>
-      <nav className={`bg-th-bkg-2 border-b border-th-bkg-2`}>
-        <div className={`px-4 lg:px-10`}>
+      <nav className={`bg-th-bkg-2`}>
+        <div className={`px-4 xl:px-6`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
               <Link href={defaultMarket.path} shallow={true}>
@@ -50,8 +51,10 @@ const TopBar = () => {
                   />
                 </div>
               </Link>
-              <div className={`hidden md:flex md:items-center md:ml-4`}>
-                <MenuItem href={defaultMarket.path}>{t('trade')}</MenuItem>
+              <div
+                className={`hidden md:flex md:items-center md:space-x-3 md:ml-4`}
+              >
+                <TradeNavMenu />
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/account">{t('account')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
@@ -96,7 +99,7 @@ const TopBar = () => {
                 </div>
               ) : null}
               <div className="flex">
-                <div className="pl-2">
+                <div className="pl-4">
                   <ConnectWalletButton />
                 </div>
               </div>

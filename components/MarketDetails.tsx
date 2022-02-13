@@ -8,12 +8,17 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
-import { getDecimalCount, usdFormatter } from '../utils'
+import {
+  getDecimalCount,
+  patchInternalMarketName,
+  usdFormatter,
+} from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
+import SwitchMarketDropdown from './SwitchMarketDropdown'
 
 const SECONDS = 1000
 
@@ -65,10 +70,28 @@ const MarketDetails = () => {
   const isMobile = width ? width < breakpoints.sm : false
 
   const [ohlcv, setOhlcv] = useState(null)
+  const [change24h, setChange24h] = useState(0)
   const [, setLoading] = useState(false)
   const [perpStats, setPerpStats] = useState([])
   const [perpVolume, setPerpVolume] = useState(0)
-  const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : ''
+
+  const fetchMarketInfo = useCallback(async () => {
+    const marketInfo = await fetch(
+      `https://event-history-api-candles.herokuapp.com/markets/${patchInternalMarketName(
+        selectedMarketName
+      )}`
+    )
+    const parsedMarketInfo = await marketInfo.json()
+    setChange24h(parsedMarketInfo?.change24h)
+  }, [selectedMarketName])
+
+  useInterval(() => {
+    fetchMarketInfo()
+  }, 120 * SECONDS)
+
+  useEffect(() => {
+    fetchMarketInfo()
+  }, [fetchMarketInfo])
 
   const fetchPerpStats = useCallback(async () => {
     const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
@@ -157,21 +180,24 @@ const MarketDetails = () => {
       <div className="flex flex-col lg:flex-row lg:items-center">
         <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">
           <div className="flex items-center">
-            <img
-              alt=""
-              width="24"
-              height="24"
-              src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-              className={`mr-2.5`}
-            />
+            <div className="flex items-center">
+              <img
+                alt=""
+                width="24"
+                height="24"
+                src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                className={`mr-2.5`}
+              />
 
-            <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-            <span className="text-th-fgd-4 text-xl">
-              {isPerpMarket ? '-' : '/'}
-            </span>
-            <div className="font-semibold pl-0.5 text-xl">
-              {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+              <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
+              <span className="text-th-fgd-4 text-xl">
+                {isPerpMarket ? '-' : '/'}
+              </span>
+              <div className="font-semibold pl-0.5 text-xl">
+                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+              </div>
             </div>
+            <SwitchMarketDropdown />
           </div>
         </div>
         <div className="grid grid-flow-row grid-cols-1 md:grid-cols-3 gap-3 lg:grid-cols-none lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
@@ -187,19 +213,19 @@ const MarketDetails = () => {
           </div>
           <div className="flex items-center justify-between md:block">
             <div className="text-th-fgd-3 tiny-text pb-0.5">
-              {t('daily-change')}
+              {t('rolling-change')}
             </div>
-            {change || change === 0 ? (
+            {change24h || change24h === 0 ? (
               <div
                 className={`md:text-xs ${
-                  change > 0
+                  change24h > 0
                     ? `text-th-green`
-                    : change < 0
+                    : change24h < 0
                     ? `text-th-red`
                     : `text-th-fgd-1`
                 }`}
               >
-                {change.toFixed(2) + '%'}
+                {(change24h * 100).toFixed(2) + '%'}
               </div>
             ) : (
               <MarketDataLoader />
@@ -256,13 +282,13 @@ const MarketDetails = () => {
           />
         </div>
       </div>
-      <div className="absolute right-4 bottom-0 sm:bottom-auto lg:right-6 flex items-center justify-end">
+      <div className="absolute right-0 bottom-0 sm:bottom-auto lg:right-3 flex items-center justify-end space-x-2">
         {!isMobile ? (
           <div id="layout-tip">
             <UiLock />
           </div>
         ) : null}
-        <div className="ml-2" id="data-refresh-tip">
+        <div id="data-refresh-tip">
           {!isMobile && connected ? <ManualRefresh /> : null}
         </div>
       </div>
