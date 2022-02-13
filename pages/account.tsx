@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   BellIcon,
   CurrencyDollarIcon,
+  DuplicateIcon,
   ExclamationCircleIcon,
-  ExternalLinkIcon,
   GiftIcon,
   LinkIcon,
   PencilIcon,
@@ -23,7 +23,7 @@ import AccountOverview from '../components/account_page/AccountOverview'
 import AccountInterest from '../components/account_page/AccountInterest'
 import AccountFunding from '../components/account_page/AccountFunding'
 import AccountNameModal from '../components/AccountNameModal'
-import Button, { IconButton } from '../components/Button'
+import Button, { IconButton, LinkButton } from '../components/Button'
 import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
 import Swipeable from '../components/mobile/Swipeable'
@@ -44,7 +44,7 @@ import {
   walletConnectedSelector,
 } from '../stores/selectors'
 import CreateAlertModal from '../components/CreateAlertModal'
-import { abbreviateAddress } from '../utils'
+import { copyToClipboard } from '../utils'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -155,6 +155,11 @@ export default function Account() {
     }
   }, [isCopied])
 
+  const handleCopyAddress = (address) => {
+    setIsCopied(true)
+    copyToClipboard(address)
+  }
+
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
   }
@@ -225,17 +230,24 @@ export default function Account() {
                     </IconButton>
                   ) : null}
                 </div>
-                <a
-                  className="flex items-center text-th-fgd-3"
-                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span className="text-xxs sm:text-xs">
-                    {abbreviateAddress(mangoAccount.publicKey)}
-                  </span>
-                  <ExternalLinkIcon className="cursor-pointer default-transition h-3.5 w-3.5 ml-1.5 hover:text-th-fgd-1" />
-                </a>
+                <div className="flex h-4 items-center">
+                  <LinkButton
+                    className="flex font-normal items-center no-underline text-th-fgd-3"
+                    onClick={() =>
+                      handleCopyAddress(mangoAccount.publicKey.toString())
+                    }
+                  >
+                    <span className="text-xxs sm:text-xs">
+                      {mangoAccount.publicKey.toBase58()}
+                    </span>
+                    <DuplicateIcon className="h-4 w-4 ml-1.5" />
+                  </LinkButton>
+                  {isCopied ? (
+                    <span className="bg-th-bkg-3 ml-2 px-1.5 py-0.5 rounded text-xs">
+                      Copied
+                    </span>
+                  ) : null}
+                </div>
                 <div className="flex items-center text-th-red text-xxs">
                   <ExclamationCircleIcon className="h-4 mr-1.5 w-4" />
                   {t('account-address-warning')}

@@ -343,82 +343,100 @@ const BalancesTable = ({
                   </TrHead>
                 </thead>
                 <tbody>
-                  {items.map((balance, index) => (
-                    <TrBody index={index} key={`${balance.symbol}${index}`}>
-                      <Td>
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-
-                          {balance.symbol}
-                        </div>
-                      </Td>
-                      <Td>{balance.deposits.toFixed()}</Td>
-                      <Td>{balance.borrows.toFixed()}</Td>
-                      <Td>{balance.orders}</Td>
-                      <Td>{balance.unsettled}</Td>
-                      <Td>
-                        {marketConfig.kind === 'spot' &&
-                        marketConfig.name.includes(balance.symbol) &&
-                        selectedMarket ? (
-                          <span
-                            className={
-                              balance.net.toNumber() > 0
-                                ? 'cursor-pointer underline hover:no-underline'
-                                : ''
-                            }
-                            onClick={() =>
-                              handleSizeClick(balance.net, balance.symbol)
-                            }
-                          >
-                            {balance.net.toFixed()}
-                          </span>
-                        ) : (
-                          balance.net.toFixed()
-                        )}
-                      </Td>
-                      <Td>{formatUsdValue(balance.value.toNumber())}</Td>
-                      <Td>
-                        <span className="text-th-green">
-                          {balance.depositRate.toFixed(2)}%
-                        </span>
-                      </Td>
-                      <Td>
-                        <span className="text-th-red">
-                          {balance.borrowRate.toFixed(2)}%
-                        </span>
-                      </Td>
-                      {showDepositWithdraw ? (
+                  {items.map((balance, index) => {
+                    const tokenConfig = getTokenBySymbol(
+                      mangoGroupConfig,
+                      balance.symbol
+                    )
+                    return (
+                      <TrBody index={index} key={`${balance.symbol}${index}`}>
                         <Td>
-                          <div className="flex justify-end">
-                            <Button
-                              className="text-xs pt-0 pb-0 h-7 pl-3 pr-3"
-                              onClick={() =>
-                                handleOpenDepositModal(balance.symbol)
-                              }
-                            >
-                              {balance.borrows.toNumber() > 0
-                                ? t('repay')
-                                : t('deposit')}
-                            </Button>
-                            <Button
-                              className="text-xs pt-0 pb-0 h-7 ml-4 pl-3 pr-3"
-                              onClick={() =>
-                                handleOpenWithdrawModal(balance.symbol)
-                              }
-                            >
-                              {t('withdraw')}
-                            </Button>
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+
+                            {balance.symbol}
                           </div>
                         </Td>
-                      ) : null}
-                    </TrBody>
-                  ))}
+                        <Td>
+                          {(+balance.deposits).toLocaleString(undefined, {
+                            maximumFractionDigits: tokenConfig.decimals,
+                          })}
+                        </Td>
+                        <Td>
+                          {(+balance.deposits).toLocaleString(undefined, {
+                            maximumFractionDigits: tokenConfig.decimals,
+                          })}
+                        </Td>
+                        <Td>{balance.orders}</Td>
+                        <Td>{balance.unsettled}</Td>
+                        <Td>
+                          {marketConfig.kind === 'spot' &&
+                          marketConfig.name.includes(balance.symbol) &&
+                          selectedMarket ? (
+                            <span
+                              className={
+                                balance.net.toNumber() > 0
+                                  ? 'cursor-pointer underline hover:no-underline'
+                                  : ''
+                              }
+                              onClick={() =>
+                                handleSizeClick(balance.net, balance.symbol)
+                              }
+                            >
+                              {(+balance.net).toLocaleString(undefined, {
+                                maximumFractionDigits: tokenConfig.decimals,
+                              })}
+                            </span>
+                          ) : (
+                            (+balance.net).toLocaleString(undefined, {
+                              maximumFractionDigits: tokenConfig.decimals,
+                            })
+                          )}
+                        </Td>
+                        <Td>{formatUsdValue(balance.value.toNumber())}</Td>
+                        <Td>
+                          <span className="text-th-green">
+                            {balance.depositRate.toFixed(2)}%
+                          </span>
+                        </Td>
+                        <Td>
+                          <span className="text-th-red">
+                            {balance.borrowRate.toFixed(2)}%
+                          </span>
+                        </Td>
+                        {showDepositWithdraw ? (
+                          <Td>
+                            <div className="flex justify-end">
+                              <Button
+                                className="text-xs pt-0 pb-0 h-7 pl-3 pr-3"
+                                onClick={() =>
+                                  handleOpenDepositModal(balance.symbol)
+                                }
+                              >
+                                {balance.borrows.toNumber() > 0
+                                  ? t('repay')
+                                  : t('deposit')}
+                              </Button>
+                              <Button
+                                className="text-xs pt-0 pb-0 h-7 ml-4 pl-3 pr-3"
+                                onClick={() =>
+                                  handleOpenWithdrawModal(balance.symbol)
+                                }
+                              >
+                                {t('withdraw')}
+                              </Button>
+                            </div>
+                          </Td>
+                        ) : null}
+                      </TrBody>
+                    )
+                  })}
                 </tbody>
                 {showDepositModal && (
                   <DepositModal

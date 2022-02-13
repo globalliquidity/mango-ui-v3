@@ -182,15 +182,23 @@ const PositionsTable = () => {
                                   )
                                 }
                               >
-                                {`${Math.abs(basePosition)} ${
-                                  marketConfig.baseSymbol
-                                }`}
+                                {`${Math.abs(basePosition).toLocaleString(
+                                  undefined,
+                                  {
+                                    maximumFractionDigits:
+                                      marketConfig.baseDecimals,
+                                  }
+                                )} ${marketConfig.baseSymbol}`}
                               </span>
                             ) : (
                               <span>
-                                {`${Math.abs(basePosition)} ${
-                                  marketConfig.baseSymbol
-                                }`}
+                                {`${Math.abs(basePosition).toLocaleString(
+                                  undefined,
+                                  {
+                                    maximumFractionDigits:
+                                      marketConfig.baseDecimals,
+                                  }
+                                )} ${marketConfig.baseSymbol}`}
                               </span>
                             )}
                           </Td>
@@ -273,7 +281,13 @@ const PositionsTable = () => {
                                         ? t('long').toUpperCase()
                                         : t('short').toUpperCase()}
                                     </span>
-                                    {Math.abs(basePosition)}
+                                    {Math.abs(basePosition).toLocaleString(
+                                      undefined,
+                                      {
+                                        maximumFractionDigits:
+                                          marketConfig.baseDecimals,
+                                      }
+                                    )}
                                   </div>
                                 </div>
                               </div>
