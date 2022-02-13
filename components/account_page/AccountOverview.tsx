@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip as ChartTooltip,
+} from 'recharts'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import useMangoStore from '../../stores/useMangoStore'
@@ -9,12 +15,15 @@ import PositionsTable from '../PerpPositionsTable'
 import Switch from '../Switch'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
 import { ExclamationIcon } from '@heroicons/react/solid'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'next-i18next'
 import ButtonGroup from '../ButtonGroup'
 import useDimensions from 'react-cool-dimensions'
 import { useTheme } from 'next-themes'
 import { numberCompacter } from '../SwapTokenInfo'
 import Checkbox from '../Checkbox'
+import { cloneDeep } from 'lodash'
+import Tooltip from '../Tooltip'
 
 dayjs.extend(utc)
 
@@ -89,7 +98,7 @@ export default function AccountOverview() {
   }, [mangoAccountPk])
 
   useEffect(() => {
-    if (hourlyPerformanceStats) {
+    if (hourlyPerformanceStats.length > 0) {
       if (performanceRange === 'All') {
         setChartData(hourlyPerformanceStats.slice().reverse())
       }
@@ -98,9 +107,20 @@ export default function AccountOverview() {
           // @ts-ignore
           dayjs().utc().hour(0).minute(0).subtract(29, 'day')
         ).getTime()
-        const chartData = hourlyPerformanceStats.filter(
+        const chartData = cloneDeep(hourlyPerformanceStats).filter(
           (d) => new Date(d.time).getTime() > start
         )
+        const pnlStart = chartData[chartData.length - 1].pnl
+        const perpPnlStart = chartData[chartData.length - 1].perp_pnl
+        for (let i = 0; i < chartData.length; i++) {
+          if (i === chartData.length - 1) {
+            chartData[i].pnl = 0
+            chartData[i].perp_pnl = 0
+          } else {
+            chartData[i].pnl = chartData[i].pnl - pnlStart
+            chartData[i].perp_pnl = chartData[i].perp_pnl - perpPnlStart
+          }
+        }
         setChartData(chartData.reverse())
       }
       if (performanceRange === '7d') {
@@ -108,9 +128,20 @@ export default function AccountOverview() {
           // @ts-ignore
           dayjs().utc().hour(0).minute(0).subtract(7, 'day')
         ).getTime()
-        const chartData = hourlyPerformanceStats.filter(
+        const chartData = cloneDeep(hourlyPerformanceStats).filter(
           (d) => new Date(d.time).getTime() > start
         )
+        const pnlStart = chartData[chartData.length - 1].pnl
+        const perpPnlStart = chartData[chartData.length - 1].perp_pnl
+        for (let i = 0; i < chartData.length; i++) {
+          if (i === chartData.length - 1) {
+            chartData[i].pnl = 0
+            chartData[i].perp_pnl = 0
+          } else {
+            chartData[i].pnl = chartData[i].pnl - pnlStart
+            chartData[i].perp_pnl = chartData[i].perp_pnl - perpPnlStart
+          }
+        }
         setChartData(chartData.reverse())
       }
       if (performanceRange === '24h') {
@@ -118,9 +149,20 @@ export default function AccountOverview() {
           // @ts-ignore
           dayjs().utc().hour(0).minute(0).subtract(1, 'day')
         ).getTime()
-        const chartData = hourlyPerformanceStats.filter(
+        const chartData = cloneDeep(hourlyPerformanceStats).filter(
           (d) => new Date(d.time).getTime() > start
         )
+        const pnlStart = chartData[chartData.length - 1].pnl
+        const perpPnlStart = chartData[chartData.length - 1].perp_pnl
+        for (let i = 0; i < chartData.length; i++) {
+          if (i === chartData.length - 1) {
+            chartData[i].pnl = 0
+            chartData[i].perp_pnl = 0
+          } else {
+            chartData[i].pnl = chartData[i].pnl - pnlStart
+            chartData[i].perp_pnl = chartData[i].perp_pnl - perpPnlStart
+          }
+        }
         setChartData(chartData.reverse())
       }
     }
@@ -180,6 +222,18 @@ export default function AccountOverview() {
       ? '#F84638'
       : '#CC2929'
 
+  const renderPnlChartTitle = () => {
+    if (showPerpPnl && showSpotPnl) {
+      return t('total-pnl')
+    }
+    if (!showSpotPnl) {
+      return `${t('perp')} PnL`
+    }
+    if (!showPerpPnl) {
+      return `${t('spot')} PnL`
+    }
+  }
+
   return mangoAccount ? (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4">
@@ -231,10 +285,13 @@ export default function AccountOverview() {
             )} */}
           </div>
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
-            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">PnL</div>
+            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+              {t('total-pnl')}{' '}
+              <span className="text-th-fgd-4">({t('all-time')})</span>
+            </div>
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
               {chartData.length > 0 ? (
-                formatUsdValue(chartData[chartData.length - 1]['pnl'])
+                formatUsdValue(hourlyPerformanceStats[0]['pnl'])
               ) : (
                 <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-48" />
               )}
@@ -317,15 +374,22 @@ export default function AccountOverview() {
           <div className="h-64 mt-4 w-full" ref={observe}>
             <div className="flex justify-between pb-9">
               <div>
-                <div className="pb-0.5 text-sm text-th-fgd-3">
-                  {chartToShow === 'Value' ? t('account-value') : chartToShow}{' '}
-                  <span className="text-th-fgd-4">
-                    {performanceRange === 'All'
-                      ? `(${t('all-time')})`
-                      : `(${t('timeframe-desc', {
-                          timeframe: performanceRange,
-                        })})`}
-                  </span>
+                <div className="flex items-center pb-0.5">
+                  <div className="text-sm text-th-fgd-3">
+                    {chartToShow === 'Value'
+                      ? t('account-value')
+                      : renderPnlChartTitle()}{' '}
+                    <span className="text-th-fgd-4">
+                      {performanceRange === 'All'
+                        ? `(${t('all-time')})`
+                        : `(${t('timeframe-desc', {
+                            timeframe: performanceRange,
+                          })})`}
+                    </span>
+                  </div>
+                  <Tooltip content={t('delayed-info')}>
+                    <InformationCircleIcon className="cursor-help h-5 ml-1.5 text-th-fgd-3 w-5" />
+                  </Tooltip>
                 </div>
                 {mouseData ? (
                   <>
@@ -404,7 +468,7 @@ export default function AccountOverview() {
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
               >
-                <Tooltip
+                <ChartTooltip
                   cursor={{
                     strokeOpacity: 0,
                   }}

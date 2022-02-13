@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   BellIcon,
   CurrencyDollarIcon,
+  DuplicateIcon,
   ExclamationCircleIcon,
-  ExternalLinkIcon,
   GiftIcon,
   LinkIcon,
   PencilIcon,
@@ -23,7 +23,7 @@ import AccountOverview from '../components/account_page/AccountOverview'
 import AccountInterest from '../components/account_page/AccountInterest'
 import AccountFunding from '../components/account_page/AccountFunding'
 import AccountNameModal from '../components/AccountNameModal'
-import Button, { IconButton } from '../components/Button'
+import Button, { IconButton, LinkButton } from '../components/Button'
 import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
 import Swipeable from '../components/mobile/Swipeable'
@@ -44,7 +44,7 @@ import {
   walletConnectedSelector,
 } from '../stores/selectors'
 import CreateAlertModal from '../components/CreateAlertModal'
-import { abbreviateAddress } from '../utils'
+import { copyToClipboard } from '../utils'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -65,6 +65,7 @@ export default function Account() {
   const [showAlertsModal, setShowAlertsModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [resetOnLeave, setResetOnLeave] = useState(false)
+  const [mngoAccrued, setMngoAccrued] = useState(ZERO_BN)
   const connected = useMangoStore(walletConnectedSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
   const mangoClient = useMangoStore((s) => s.connection.client)
@@ -154,6 +155,11 @@ export default function Account() {
     }
   }, [isCopied])
 
+  const handleCopyAddress = (address) => {
+    setIsCopied(true)
+    copyToClipboard(address)
+  }
+
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
   }
@@ -162,12 +168,14 @@ export default function Account() {
     setActiveTab(tabName)
   }
 
-  const mngoAccrued = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
-          return perpAcct.mngoAccrued.add(acc)
-        }, ZERO_BN)
-      : ZERO_BN
+  useMemo(() => {
+    setMngoAccrued(
+      mangoAccount
+        ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
+            return perpAcct.mngoAccrued.add(acc)
+          }, ZERO_BN)
+        : ZERO_BN
+    )
   }, [mangoAccount])
 
   const handleRedeemMngo = async () => {
@@ -185,6 +193,7 @@ export default function Account() {
         mngoNodeBank.vault
       )
       actions.reloadMangoAccount()
+      setMngoAccrued(ZERO_BN)
       notify({
         title: t('redeem-success'),
         description: '',
@@ -221,52 +230,59 @@ export default function Account() {
                     </IconButton>
                   ) : null}
                 </div>
-                <a
-                  className="flex items-center text-th-fgd-3"
-                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span className="text-xxs sm:text-xs">
-                    {abbreviateAddress(mangoAccount.publicKey)}
-                  </span>
-                  <ExternalLinkIcon className="cursor-pointer default-transition h-3.5 w-3.5 ml-1.5 hover:text-th-fgd-1" />
-                </a>
+                <div className="flex h-4 items-center">
+                  <LinkButton
+                    className="flex font-normal items-center no-underline text-th-fgd-3"
+                    onClick={() =>
+                      handleCopyAddress(mangoAccount.publicKey.toString())
+                    }
+                  >
+                    <span className="text-xxs sm:text-xs">
+                      {mangoAccount.publicKey.toBase58()}
+                    </span>
+                    <DuplicateIcon className="h-4 w-4 ml-1.5" />
+                  </LinkButton>
+                  {isCopied ? (
+                    <span className="bg-th-bkg-3 ml-2 px-1.5 py-0.5 rounded text-xs">
+                      Copied
+                    </span>
+                  ) : null}
+                </div>
                 <div className="flex items-center text-th-red text-xxs">
                   <ExclamationCircleIcon className="h-4 mr-1.5 w-4" />
                   {t('account-address-warning')}
                 </div>
               </div>
               {!pubkey ? (
-                <div className="flex items-center pb-1.5 space-x-2">
-                  {/* {!mngoAccrued.eq(ZERO_BN) ? ( */}
+                <div className="flex flex-col sm:flex-row items-center pb-1.5 space-y-2 sm:space-y-0 sm:space-x-2">
                   <button
-                    className="bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                    className="bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
                     disabled={mngoAccrued.eq(ZERO_BN)}
                     onClick={handleRedeemMngo}
                   >
-                    <div className="flex items-center">
-                      <GiftIcon className="h-4 w-4 mr-1.5" />
+                    <div className="flex items-center whitespace-nowrap">
+                      <GiftIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
                       {!mngoAccrued.eq(ZERO_BN)
                         ? `Claim ${nativeToUi(
                             mngoAccrued.toNumber(),
                             mangoGroup.tokens[MNGO_INDEX].decimals
-                          ).toFixed(3)} MNGO`
+                          ).toLocaleString(undefined, {
+                            minimumSignificantDigits: 1,
+                          })} MNGO`
                         : '0 MNGO Rewards'}
                     </div>
                   </button>
-                  {/* ) : null} */}
                   <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
                     onClick={() => setShowCloseAccountModal(true)}
                   >
-                    <div className="flex items-center">
-                      <TrashIcon className="h-4 w-4 mr-1.5" />
+                    <div className="flex items-center whitespace-nowrap">
+                      <TrashIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
                       {t('close-account:close-account')}
                     </div>
                   </Button>
                   <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
                     onClick={() => setShowAlertsModal(true)}
                   >
                     <div className="flex items-center">
