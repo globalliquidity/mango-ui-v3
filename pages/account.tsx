@@ -8,6 +8,7 @@ import {
   LinkIcon,
   PencilIcon,
   TrashIcon,
+  UsersIcon,
 } from '@heroicons/react/outline'
 import { nativeToUi, ZERO_BN } from '@blockworks-foundation/mango-client'
 import useMangoStore, {
@@ -44,12 +45,17 @@ import {
   walletConnectedSelector,
 } from '../stores/selectors'
 import CreateAlertModal from '../components/CreateAlertModal'
+import DelegateModal from '../components/DelegateModal'
 import { copyToClipboard } from '../utils'
 
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'close-account'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'close-account',
+        'delegate',
+      ])),
       // Will be passed to the page component as props
     },
   }
@@ -58,11 +64,12 @@ export async function getStaticProps({ locale }) {
 const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding']
 
 export default function Account() {
-  const { t } = useTranslation(['common', 'close-account'])
+  const { t } = useTranslation(['common', 'close-account', 'delegate'])
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [showCloseAccountModal, setShowCloseAccountModal] = useState(false)
   const [showAlertsModal, setShowAlertsModal] = useState(false)
+  const [showDelegateModal, setShowDelegateModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [resetOnLeave, setResetOnLeave] = useState(false)
   const [mngoAccrued, setMngoAccrued] = useState(ZERO_BN)
@@ -80,6 +87,8 @@ export default function Account() {
   const isMobile = width ? width < breakpoints.sm : false
   const router = useRouter()
   const { pubkey } = router.query
+  const isDelegatedAccount = !mangoAccount?.owner.equals(wallet?.publicKey)
+  const buttonCols = isDelegatedAccount ? 2 : 4
 
   const handleCloseAlertModal = useCallback(() => {
     setShowAlertsModal(false)
@@ -95,6 +104,10 @@ export default function Account() {
 
   const handleCloseCloseAccountModal = useCallback(() => {
     setShowCloseAccountModal(false)
+  }, [])
+
+  const handleCloseDelegateModal = useCallback(() => {
+    setShowDelegateModal(false)
   }, [])
 
   useEffect(() => {
@@ -254,9 +267,11 @@ export default function Account() {
                 </div>
               </div>
               {!pubkey ? (
-                <div className="flex flex-col sm:flex-row items-center pb-1.5 space-y-2 sm:space-y-0 sm:space-x-2">
+                <div
+                  className={`grid grid-cols-${buttonCols} grid-rows-1 gap-2 auto-cols-min`}
+                >
                   <button
-                    className="bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                    className="col-span-1 bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
                     disabled={mngoAccrued.eq(ZERO_BN)}
                     onClick={handleRedeemMngo}
                   >
@@ -272,22 +287,44 @@ export default function Account() {
                         : '0 MNGO Rewards'}
                     </div>
                   </button>
+                  {!isDelegatedAccount && (
+                    <Button
+                      className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                      onClick={() => setShowCloseAccountModal(true)}
+                    >
+                      <div className="flex items-center">
+                        <TrashIcon className="h-4 w-4 mr-1.5" />
+                        {t('close-account:close-account')}
+                      </div>
+                    </Button>
+                  )}
                   <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
-                    onClick={() => setShowCloseAccountModal(true)}
-                  >
-                    <div className="flex items-center whitespace-nowrap">
-                      <TrashIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
-                      {t('close-account:close-account')}
-                    </div>
-                  </Button>
-                  <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
+                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                     onClick={() => setShowAlertsModal(true)}
                   >
                     <div className="flex items-center">
                       <BellIcon className="h-4 w-4 mr-1.5" />
                       Alerts
+                    </div>
+                  </Button>
+                  {!isDelegatedAccount && (
+                    <Button
+                      className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                      onClick={() => setShowDelegateModal(true)}
+                    >
+                      <div className="flex items-center">
+                        <UsersIcon className="h-4 w-4 mr-1.5" />
+                        {t('delegate:set-delegate')}
+                      </div>
+                    </Button>
+                  )}
+                  <Button
+                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    onClick={() => setShowAccountsModal(true)}
+                  >
+                    <div className="flex items-center">
+                      <CurrencyDollarIcon className="h-4 w-4 mr-1.5" />
+                      {t('accounts')}
                     </div>
                   </Button>
                 </div>
@@ -382,7 +419,6 @@ export default function Account() {
       ) : null}
       {showCloseAccountModal ? (
         <CloseAccountModal
-          accountName={mangoAccount?.name}
           isOpen={showCloseAccountModal}
           onClose={handleCloseCloseAccountModal}
         />
@@ -391,6 +427,13 @@ export default function Account() {
         <CreateAlertModal
           isOpen={showAlertsModal}
           onClose={handleCloseAlertModal}
+        />
+      ) : null}
+      {showDelegateModal ? (
+        <DelegateModal
+          delegate={mangoAccount?.delegate}
+          isOpen={showDelegateModal}
+          onClose={handleCloseDelegateModal}
         />
       ) : null}
     </div>
