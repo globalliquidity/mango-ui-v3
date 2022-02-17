@@ -1,15 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   BellIcon,
   CurrencyDollarIcon,
+  DuplicateIcon,
   ExclamationCircleIcon,
-  ExternalLinkIcon,
+  GiftIcon,
   LinkIcon,
   PencilIcon,
   TrashIcon,
   UsersIcon,
 } from '@heroicons/react/outline'
-import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
+import { nativeToUi, ZERO_BN } from '@blockworks-foundation/mango-client'
+import useMangoStore, {
+  serumProgramId,
+  MNGO_INDEX,
+} from '../stores/useMangoStore'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import AccountOrders from '../components/account_page/AccountOrders'
@@ -18,9 +23,8 @@ import AccountsModal from '../components/AccountsModal'
 import AccountOverview from '../components/account_page/AccountOverview'
 import AccountInterest from '../components/account_page/AccountInterest'
 import AccountFunding from '../components/account_page/AccountFunding'
-import AccountPerformance from '../components/account_page/AccountPerformance'
 import AccountNameModal from '../components/AccountNameModal'
-import Button, { IconButton } from '../components/Button'
+import Button, { IconButton, LinkButton } from '../components/Button'
 import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
 import Swipeable from '../components/mobile/Swipeable'
@@ -33,6 +37,7 @@ import Select from '../components/Select'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
 import CloseAccountModal from '../components/CloseAccountModal'
+import { notify } from '../utils/notifications'
 import {
   actionsSelector,
   mangoAccountSelector,
@@ -41,6 +46,7 @@ import {
 } from '../stores/selectors'
 import CreateAlertModal from '../components/CreateAlertModal'
 import DelegateModal from '../components/DelegateModal'
+import { copyToClipboard } from '../utils'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -55,14 +61,7 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const TABS = [
-  'Portfolio',
-  'Orders',
-  'History',
-  'Interest',
-  'Funding',
-  'Performance',
-]
+const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding']
 
 export default function Account() {
   const { t } = useTranslation(['common', 'close-account', 'delegate'])
@@ -73,6 +72,7 @@ export default function Account() {
   const [showDelegateModal, setShowDelegateModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [resetOnLeave, setResetOnLeave] = useState(false)
+  const [mngoAccrued, setMngoAccrued] = useState(ZERO_BN)
   const connected = useMangoStore(walletConnectedSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
   const mangoClient = useMangoStore((s) => s.connection.client)
@@ -168,12 +168,58 @@ export default function Account() {
     }
   }, [isCopied])
 
+  const handleCopyAddress = (address) => {
+    setIsCopied(true)
+    copyToClipboard(address)
+  }
+
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
   }
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
+  }
+
+  useMemo(() => {
+    setMngoAccrued(
+      mangoAccount
+        ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
+            return perpAcct.mngoAccrued.add(acc)
+          }, ZERO_BN)
+        : ZERO_BN
+    )
+  }, [mangoAccount])
+
+  const handleRedeemMngo = async () => {
+    const wallet = useMangoStore.getState().wallet.current
+    const mngoNodeBank =
+      mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
+
+    try {
+      const txid = await mangoClient.redeemAllMngo(
+        mangoGroup,
+        mangoAccount,
+        wallet,
+        mangoGroup.tokens[MNGO_INDEX].rootBank,
+        mngoNodeBank.publicKey,
+        mngoNodeBank.vault
+      )
+      actions.reloadMangoAccount()
+      setMngoAccrued(ZERO_BN)
+      notify({
+        title: t('redeem-success'),
+        description: '',
+        txid,
+      })
+    } catch (e) {
+      notify({
+        title: t('redeem-failure'),
+        description: e.message,
+        txid: e.txid,
+        type: 'error',
+      })
+    }
   }
 
   return (
@@ -185,26 +231,36 @@ export default function Account() {
             <>
               <div className="pb-3 md:pb-0">
                 <div className="flex items-center mb-1">
-                  <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
+                  <h1 className={`font-semibold mr-2 text-th-fgd-1 text-2xl`}>
                     {mangoAccount?.name || t('account')}
                   </h1>
                   {!pubkey ? (
-                    <IconButton onClick={() => setShowNameModal(true)}>
-                      <PencilIcon className="h-4 w-4" />
+                    <IconButton
+                      className="h-7 w-7"
+                      onClick={() => setShowNameModal(true)}
+                    >
+                      <PencilIcon className="h-3.5 w-3.5" />
                     </IconButton>
                   ) : null}
                 </div>
-                <a
-                  className="flex items-center text-th-fgd-3"
-                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span className="text-xxs sm:text-xs">
-                    {mangoAccount.publicKey.toString()}
-                  </span>
-                  <ExternalLinkIcon className="cursor-pointer default-transition h-4 w-4 ml-1.5 hover:text-th-fgd-1" />
-                </a>
+                <div className="flex h-4 items-center">
+                  <LinkButton
+                    className="flex font-normal items-center no-underline text-th-fgd-3"
+                    onClick={() =>
+                      handleCopyAddress(mangoAccount.publicKey.toString())
+                    }
+                  >
+                    <span className="text-xxs sm:text-xs">
+                      {mangoAccount.publicKey.toBase58()}
+                    </span>
+                    <DuplicateIcon className="h-4 w-4 ml-1.5" />
+                  </LinkButton>
+                  {isCopied ? (
+                    <span className="bg-th-bkg-3 ml-2 px-1.5 py-0.5 rounded text-xs">
+                      Copied
+                    </span>
+                  ) : null}
+                </div>
                 <div className="flex items-center text-th-red text-xxs">
                   <ExclamationCircleIcon className="h-4 mr-1.5 w-4" />
                   {t('account-address-warning')}
@@ -214,6 +270,23 @@ export default function Account() {
                 <div
                   className={`grid grid-cols-${buttonCols} grid-rows-1 gap-2 auto-cols-min`}
                 >
+                  <button
+                    className="col-span-1 bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                    disabled={mngoAccrued.eq(ZERO_BN)}
+                    onClick={handleRedeemMngo}
+                  >
+                    <div className="flex items-center whitespace-nowrap">
+                      <GiftIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
+                      {!mngoAccrued.eq(ZERO_BN)
+                        ? `Claim ${nativeToUi(
+                            mngoAccrued.toNumber(),
+                            mangoGroup.tokens[MNGO_INDEX].decimals
+                          ).toLocaleString(undefined, {
+                            minimumSignificantDigits: 1,
+                          })} MNGO`
+                        : '0 MNGO Rewards'}
+                    </div>
+                  </button>
                   {!isDelegatedAccount && (
                     <Button
                       className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
@@ -259,29 +332,29 @@ export default function Account() {
             </>
           ) : null}
         </div>
-        {mangoAccount ? (
-          !isMobile ? (
-            <Tabs
-              activeTab={activeTab}
-              onChange={handleTabChange}
-              tabs={TABS}
-            />
-          ) : (
-            <div className="pb-2 pt-3">
-              <Select
-                value={t(TABS[viewIndex].toLowerCase())}
-                onChange={(e) => handleChangeViewIndex(e)}
-              >
-                {TABS.map((tab, index) => (
-                  <Select.Option key={index + tab} value={index}>
-                    {t(tab.toLowerCase())}
-                  </Select.Option>
-                ))}
-              </Select>
-            </div>
-          )
-        ) : null}
         <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
+          {mangoAccount ? (
+            !isMobile ? (
+              <Tabs
+                activeTab={activeTab}
+                onChange={handleTabChange}
+                tabs={TABS}
+              />
+            ) : (
+              <div className="pb-2 pt-3">
+                <Select
+                  value={t(TABS[viewIndex].toLowerCase())}
+                  onChange={(e) => handleChangeViewIndex(e)}
+                >
+                  {TABS.map((tab, index) => (
+                    <Select.Option key={index + tab} value={index}>
+                      {t(tab.toLowerCase())}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+            )
+          ) : null}
           {mangoAccount ? (
             !isMobile ? (
               <TabContent activeTab={activeTab} />
@@ -379,8 +452,6 @@ const TabContent = ({ activeTab }) => {
       return <AccountInterest />
     case 'Funding':
       return <AccountFunding />
-    case 'Performance':
-      return <AccountPerformance />
     default:
       return <AccountOverview />
   }

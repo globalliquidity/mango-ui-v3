@@ -35,8 +35,8 @@ const TopBar = () => {
 
   return (
     <>
-      <nav className={`bg-th-bkg-2 border-b border-th-bkg-2`}>
-        <div className={`px-4 lg:px-10`}>
+      <nav className={`bg-th-bkg-2`}>
+        <div className={`px-4 xl:px-6`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
               <Link href={defaultMarket.path} shallow={true}>
@@ -108,7 +108,7 @@ const TopBar = () => {
                 </div>
               ) : null}
               <div className="flex">
-                <div className="pl-2">
+                <div className="pl-4">
                   <ConnectWalletButton />
                 </div>
               </div>
