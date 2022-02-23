@@ -107,9 +107,8 @@ export default function RiskCalculator() {
   // Set default state variables
   const [sliderPercentage, setSliderPercentage] = useState(0)
   const [scenarioInitialized, setScenarioInitialized] = useState(false)
-  const [blankScenarioInitialized, setBlankScenarioInitialized] = useState(
-    false
-  )
+  const [blankScenarioInitialized, setBlankScenarioInitialized] =
+    useState(false)
   const [scenarioBars, setScenarioBars] = useState<ScenarioCalculator>()
   const [accountConnected, setAccountConnected] = useState(false)
   const [showZeroBalances, setShowZeroBalances] = useState(true)

@@ -23,9 +23,10 @@ const AccountSelect = ({
 }: AccountSelectProps) => {
   const { t } = useTranslation('common')
   const groupConfig = useMangoGroupConfig()
-  const tokenSymbols = useMemo(() => groupConfig.tokens.map((t) => t.symbol), [
-    groupConfig,
-  ])
+  const tokenSymbols = useMemo(
+    () => groupConfig.tokens.map((t) => t.symbol),
+    [groupConfig]
+  )
   const missingTokenSymbols = useMemo(() => {
     const symbolsForAccounts = accounts.map((a) => a.config.symbol)
     return tokenSymbols.filter((sym) => !symbolsForAccounts.includes(sym))

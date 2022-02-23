@@ -186,19 +186,12 @@ const JupiterForm: FunctionComponent = () => {
     return formValue.amount * 10 ** (inputTokenInfo?.decimals || 1)
   }, [inputTokenInfo, formValue.amount])
 
-  const {
-    routeMap,
-    allTokenMints,
-    routes,
-    loading,
-    exchange,
-    error,
-    refresh,
-  } = useJupiter({
-    ...formValue,
-    amount: amountInDecimal,
-    slippage,
-  })
+  const { routeMap, allTokenMints, routes, loading, exchange, error, refresh } =
+    useJupiter({
+      ...formValue,
+      amount: amountInDecimal,
+      slippage,
+    })
 
   useEffect(() => {
     // Fetch token list from Jupiter API

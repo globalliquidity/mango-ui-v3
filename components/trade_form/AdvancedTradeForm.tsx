@@ -566,12 +566,10 @@ export default function AdvancedTradeForm({
 
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const askInfo = useMangoStore.getState().accountInfos[
-      marketConfig.asksKey.toString()
-    ]
-    const bidInfo = useMangoStore.getState().accountInfos[
-      marketConfig.bidsKey.toString()
-    ]
+    const askInfo =
+      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
+    const bidInfo =
+      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
     const referrerPk = useMangoStore.getState().referrerPk
 

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import TradeHistoryTable from '../TradeHistoryTable'
 import { useTranslation } from 'next-i18next'
 import useMangoStore from '../../stores/useMangoStore'
-import { ArrowDownIcon, ExternalLinkIcon } from '@heroicons/react/solid'
+import { ArrowSmDownIcon, ExternalLinkIcon } from '@heroicons/react/solid'
 import { Table, TrHead, Th, TrBody, Td } from '../TableElements'
 import { LinkButton } from '../Button'
 import { useSortableData } from '../../hooks/useSortableData'
@@ -263,7 +263,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     onClick={() => requestSort('block_datetime')}
                   >
                     {t('date')}
-                    <ArrowDownIcon
+                    <ArrowSmDownIcon
                       className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                         sortConfig?.key === 'block_datetime'
                           ? sortConfig.direction === 'ascending'
@@ -281,7 +281,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     onClick={() => requestSort('asset_amount')}
                   >
                     Asset Lost
-                    <ArrowDownIcon
+                    <ArrowSmDownIcon
                       className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                         sortConfig?.key === 'asset_amount'
                           ? sortConfig.direction === 'ascending'
@@ -298,7 +298,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     onClick={() => requestSort('asset_price')}
                   >
                     Price
-                    <ArrowDownIcon
+                    <ArrowSmDownIcon
                       className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                         sortConfig?.key === 'asset_price'
                           ? sortConfig.direction === 'ascending'
@@ -316,7 +316,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     onClick={() => requestSort('liab_amount')}
                   >
                     Asset Gained
-                    <ArrowDownIcon
+                    <ArrowSmDownIcon
                       className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                         sortConfig?.key === 'liab_amount'
                           ? sortConfig.direction === 'ascending'
@@ -333,7 +333,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     onClick={() => requestSort('liab_price')}
                   >
                     Price
-                    <ArrowDownIcon
+                    <ArrowSmDownIcon
                       className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                         sortConfig?.key === 'liab_price'
                           ? sortConfig.direction === 'ascending'
@@ -461,7 +461,7 @@ const HistoryTable = ({ history, view }) => {
                     onClick={() => requestSort('block_datetime')}
                   >
                     {t('date')}
-                    <ArrowDownIcon
+                    <ArrowSmDownIcon
                       className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                         sortConfig?.key === 'block_datetime'
                           ? sortConfig.direction === 'ascending'
@@ -478,7 +478,7 @@ const HistoryTable = ({ history, view }) => {
                     onClick={() => requestSort('symbol')}
                   >
                     {t('asset')}
-                    <ArrowDownIcon
+                    <ArrowSmDownIcon
                       className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                         sortConfig?.key === 'symbol'
                           ? sortConfig.direction === 'ascending'
@@ -495,7 +495,7 @@ const HistoryTable = ({ history, view }) => {
                     onClick={() => requestSort('quantity')}
                   >
                     {t('quantity')}
-                    <ArrowDownIcon
+                    <ArrowSmDownIcon
                       className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                         sortConfig?.key === 'quantity'
                           ? sortConfig.direction === 'ascending'
@@ -512,7 +512,7 @@ const HistoryTable = ({ history, view }) => {
                     onClick={() => requestSort('usd_equivalent')}
                   >
                     {t('value')}
-                    <ArrowDownIcon
+                    <ArrowSmDownIcon
                       className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                         sortConfig?.key === 'usd_equivalent'
                           ? sortConfig.direction === 'ascending'

@@ -1,4 +1,4 @@
-import { ArrowDownIcon } from '@heroicons/react/solid'
+import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import BN from 'bn.js'
 import useTradeHistory from '../hooks/useTradeHistory'
 import Link from 'next/link'
@@ -98,7 +98,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           onClick={() => requestSort('market')}
                         >
                           {t('market')}
-                          <ArrowDownIcon
+                          <ArrowSmDownIcon
                             className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                               sortConfig?.key === 'market'
                                 ? sortConfig.direction === 'ascending'
@@ -115,7 +115,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           onClick={() => requestSort('side')}
                         >
                           {t('side')}
-                          <ArrowDownIcon
+                          <ArrowSmDownIcon
                             className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                               sortConfig?.key === 'side'
                                 ? sortConfig.direction === 'ascending'
@@ -132,7 +132,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           onClick={() => requestSort('size')}
                         >
                           {t('size')}
-                          <ArrowDownIcon
+                          <ArrowSmDownIcon
                             className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                               sortConfig?.key === 'size'
                                 ? sortConfig.direction === 'ascending'
@@ -149,7 +149,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           onClick={() => requestSort('price')}
                         >
                           {t('price')}
-                          <ArrowDownIcon
+                          <ArrowSmDownIcon
                             className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                               sortConfig?.key === 'price'
                                 ? sortConfig.direction === 'ascending'
@@ -166,7 +166,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           onClick={() => requestSort('value')}
                         >
                           {t('value')}
-                          <ArrowDownIcon
+                          <ArrowSmDownIcon
                             className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                               sortConfig?.key === 'value'
                                 ? sortConfig.direction === 'ascending'
@@ -183,7 +183,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           onClick={() => requestSort('liquidity')}
                         >
                           {t('liquidity')}
-                          <ArrowDownIcon
+                          <ArrowSmDownIcon
                             className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                               sortConfig?.key === 'liquidity'
                                 ? sortConfig.direction === 'ascending'
@@ -200,7 +200,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           onClick={() => requestSort('feeCost')}
                         >
                           {t('fee')}
-                          <ArrowDownIcon
+                          <ArrowSmDownIcon
                             className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                               sortConfig?.key === 'feeCost'
                                 ? sortConfig.direction === 'ascending'
@@ -217,7 +217,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           onClick={() => requestSort('loadTimestamp')}
                         >
                           {t('approximate-time')}
-                          <ArrowDownIcon
+                          <ArrowSmDownIcon
                             className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                               sortConfig?.key === 'loadTimestamp'
                                 ? sortConfig.direction === 'ascending'

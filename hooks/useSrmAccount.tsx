@@ -60,10 +60,10 @@ const useSrmAccount = () => {
       const msrmPk = mangoGroup.msrmVault
 
       const fetchAccounts = async () => {
-        const [
-          srmAccountInfo,
-          msrmAccountInfo,
-        ] = await getMultipleAccounts(connection, [srmPk, msrmPk])
+        const [srmAccountInfo, msrmAccountInfo] = await getMultipleAccounts(
+          connection,
+          [srmPk, msrmPk]
+        )
 
         setSrmAccount(srmAccountInfo.accountInfo)
         setMsrmAccount(msrmAccountInfo.accountInfo)

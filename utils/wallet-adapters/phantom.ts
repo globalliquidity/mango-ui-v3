@@ -23,8 +23,10 @@ interface PhantomProvider {
   listeners: (event: PhantomEvent) => (() => void)[]
 }
 
-export class PhantomWalletAdapter extends EventEmitter
-  implements WalletAdapter {
+export class PhantomWalletAdapter
+  extends EventEmitter
+  implements WalletAdapter
+{
   constructor() {
     super()
     this.connect = this.connect.bind(this)

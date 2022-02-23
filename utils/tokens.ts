@@ -10,9 +10,7 @@ export type ProgramAccount<T> = {
   account: T
 }
 
-export function parseTokenAccountData(
-  data: Buffer
-): {
+export function parseTokenAccountData(data: Buffer): {
   mint: PublicKey
   owner: PublicKey
   amount: number

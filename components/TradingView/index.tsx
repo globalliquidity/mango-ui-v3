@@ -103,8 +103,10 @@ const TVChartContainer = () => {
       datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
         defaultProps.datafeedUrl
       ),
-      interval: defaultProps.interval as ChartingLibraryWidgetOptions['interval'],
-      container_id: defaultProps.containerId as ChartingLibraryWidgetOptions['container_id'],
+      interval:
+        defaultProps.interval as ChartingLibraryWidgetOptions['interval'],
+      container_id:
+        defaultProps.containerId as ChartingLibraryWidgetOptions['container_id'],
       library_path: defaultProps.libraryPath as string,
       locale: 'en',
       enabled_features: ['hide_left_toolbar_by_default'],
@@ -202,10 +204,10 @@ const TVChartContainer = () => {
     market: Market | PerpMarket
   ) => {
     const wallet = useMangoStore.getState().wallet.current
-    const selectedMangoGroup = useMangoStore.getState().selectedMangoGroup
-      .current
-    const selectedMangoAccount = useMangoStore.getState().selectedMangoAccount
-      .current
+    const selectedMangoGroup =
+      useMangoStore.getState().selectedMangoGroup.current
+    const selectedMangoAccount =
+      useMangoStore.getState().selectedMangoAccount.current
     const mangoClient = useMangoStore.getState().connection.client
     let txid
     try {
@@ -263,12 +265,10 @@ const TVChartContainer = () => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const marketConfig = useMangoStore.getState().selectedMarket.config
-    const askInfo = useMangoStore.getState().accountInfos[
-      marketConfig.asksKey.toString()
-    ]
-    const bidInfo = useMangoStore.getState().accountInfos[
-      marketConfig.bidsKey.toString()
-    ]
+    const askInfo =
+      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
+    const bidInfo =
+      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
     const referrerPk = useMangoStore.getState().referrerPk
 
