@@ -3,7 +3,7 @@ import { useBalances } from '../hooks/useBalances'
 import useMangoStore from '../stores/useMangoStore'
 import Button, { LinkButton } from '../components/Button'
 import { notify } from '../utils/notifications'
-import { ArrowSmDownIcon, ExclamationIcon } from '@heroicons/react/outline'
+import { ArrowDownIcon, ExclamationIcon } from '@heroicons/react/outline'
 import { Market } from '@project-serum/serum'
 import {
   getMarketIndexBySymbol,
@@ -194,7 +194,7 @@ const BalancesTable = ({
                         onClick={() => requestSort('symbol')}
                       >
                         {t('asset')}
-                        <ArrowSmDownIcon
+                        <ArrowDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'symbol'
                               ? sortConfig.direction === 'ascending'
@@ -211,7 +211,7 @@ const BalancesTable = ({
                         onClick={() => requestSort('deposits')}
                       >
                         {t('deposits')}
-                        <ArrowSmDownIcon
+                        <ArrowDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'deposits'
                               ? sortConfig.direction === 'ascending'
@@ -228,7 +228,7 @@ const BalancesTable = ({
                         onClick={() => requestSort('borrows')}
                       >
                         {t('borrows')}
-                        <ArrowSmDownIcon
+                        <ArrowDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'borrows'
                               ? sortConfig.direction === 'ascending'
@@ -245,7 +245,7 @@ const BalancesTable = ({
                         onClick={() => requestSort('orders')}
                       >
                         {t('in-orders')}
-                        <ArrowSmDownIcon
+                        <ArrowDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'orders'
                               ? sortConfig.direction === 'ascending'
@@ -262,7 +262,7 @@ const BalancesTable = ({
                         onClick={() => requestSort('unsettled')}
                       >
                         {t('unsettled')}
-                        <ArrowSmDownIcon
+                        <ArrowDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'unsettled'
                               ? sortConfig.direction === 'ascending'
@@ -279,7 +279,7 @@ const BalancesTable = ({
                         onClick={() => requestSort('net')}
                       >
                         {t('net-balance')}
-                        <ArrowSmDownIcon
+                        <ArrowDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'net'
                               ? sortConfig.direction === 'ascending'
@@ -296,7 +296,7 @@ const BalancesTable = ({
                         onClick={() => requestSort('value')}
                       >
                         {t('value')}
-                        <ArrowSmDownIcon
+                        <ArrowDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'value'
                               ? sortConfig.direction === 'ascending'
@@ -313,7 +313,7 @@ const BalancesTable = ({
                         onClick={() => requestSort('depositRate')}
                       >
                         {t('deposit-rate')}
-                        <ArrowSmDownIcon
+                        <ArrowDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'depositRate'
                               ? sortConfig.direction === 'ascending'
@@ -330,7 +330,7 @@ const BalancesTable = ({
                         onClick={() => requestSort('borrowRate')}
                       >
                         {t('borrow-rate')}
-                        <ArrowSmDownIcon
+                        <ArrowDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'borrowRate'
                               ? sortConfig.direction === 'ascending'
