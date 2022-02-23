@@ -325,11 +325,10 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const set = get().set
 
         if (wallet?.publicKey && connected) {
-          const ownedTokenAccounts =
-            await getTokenAccountsByOwnerWithWrappedSol(
-              connection,
-              wallet.publicKey
-            )
+          const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
+            connection,
+            wallet.publicKey
+          )
           const tokens = []
           ownedTokenAccounts.forEach((account) => {
             const config = getTokenByMint(groupConfig, account.mint)
@@ -571,8 +570,9 @@ const useMangoStore = create<MangoStore>((set, get) => {
           })
 
         if (selectedMangoAccount.spotOpenOrdersAccounts.length) {
-          const openOrdersAccounts =
-            selectedMangoAccount.spotOpenOrdersAccounts.filter(isDefined)
+          const openOrdersAccounts = selectedMangoAccount.spotOpenOrdersAccounts.filter(
+            isDefined
+          )
           const publicKeys = openOrdersAccounts.map((act) =>
             act.publicKey.toString()
           )
@@ -603,8 +603,10 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const connection = get().connection.current
         const mangoClient = get().connection.client
 
-        const [reloadedMangoAccount, lastSlot] =
-          await mangoAccount.reloadFromSlot(connection, mangoClient.lastSlot)
+        const [
+          reloadedMangoAccount,
+          lastSlot,
+        ] = await mangoAccount.reloadFromSlot(connection, mangoClient.lastSlot)
         const lastSeenSlot = get().selectedMangoAccount.lastSlot
 
         if (lastSlot > lastSeenSlot) {

@@ -164,8 +164,8 @@ export default function Orderbook({ depth = 8 }) {
       previousGrouping !== grouping
     ) {
       // check if user has open orders so we can highlight them on orderbook
-      const openOrders =
-        useMangoStore.getState().selectedMangoAccount.openOrders
+      const openOrders = useMangoStore.getState().selectedMangoAccount
+        .openOrders
       const newOpenOrderPrices = openOrders?.length
         ? openOrders
             .filter(({ market }) =>

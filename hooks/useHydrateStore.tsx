@@ -101,8 +101,8 @@ const useHydrateStore = () => {
       (info, context) => {
         if (info?.lamports === 0) return
 
-        const lastSeenSlot =
-          useMangoStore.getState().selectedMangoAccount.lastSlot
+        const lastSeenSlot = useMangoStore.getState().selectedMangoAccount
+          .lastSlot
         const mangoAccountLastUpdated = new Date(
           useMangoStore.getState().selectedMangoAccount.lastUpdatedAt
         )
@@ -122,8 +122,7 @@ const useHydrateStore = () => {
           setMangoStore((state) => {
             state.selectedMangoAccount.lastSlot = context.slot
             state.selectedMangoAccount.current = newMangoAccount
-            state.selectedMangoAccount.lastUpdatedAt =
-              newUpdatedAt.toISOString()
+            state.selectedMangoAccount.lastUpdatedAt = newUpdatedAt.toISOString()
           })
         }
       }

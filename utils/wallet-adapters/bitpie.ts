@@ -58,7 +58,7 @@ export class BitpieWalletAdapter extends EventEmitter implements WalletAdapter {
       let account: string
       try {
         account = await wallet.getAccount()
-      } catch (error: any) {
+      } catch (error) {
         notify({
           title: 'Connection Error',
           type: 'error',
@@ -71,7 +71,7 @@ export class BitpieWalletAdapter extends EventEmitter implements WalletAdapter {
       this._publicKey = new PublicKey(account)
 
       this.emit('connect')
-    } catch (error: any) {
+    } catch (error) {
       this.emit('error', error)
       throw error
     } finally {
@@ -94,7 +94,7 @@ export class BitpieWalletAdapter extends EventEmitter implements WalletAdapter {
       if (!wallet) return
 
       return (await wallet.signTransaction(transaction)) || transaction
-    } catch (error: any) {
+    } catch (error) {
       this.emit('error', error)
       throw error
     }
@@ -108,7 +108,7 @@ export class BitpieWalletAdapter extends EventEmitter implements WalletAdapter {
       if (!wallet) return
 
       return (await wallet.signAllTransactions(transactions)) || transactions
-    } catch (error: any) {
+    } catch (error) {
       this.emit('error', error)
       throw error
     }

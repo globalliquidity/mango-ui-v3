@@ -344,10 +344,10 @@ const OpenOrdersTable = () => {
     market: Market | PerpMarket
   ) => {
     const wallet = useMangoStore.getState().wallet.current
-    const selectedMangoGroup =
-      useMangoStore.getState().selectedMangoGroup.current
-    const selectedMangoAccount =
-      useMangoStore.getState().selectedMangoAccount.current
+    const selectedMangoGroup = useMangoStore.getState().selectedMangoGroup
+      .current
+    const selectedMangoAccount = useMangoStore.getState().selectedMangoAccount
+      .current
     const mangoClient = useMangoStore.getState().connection.client
     setCancelId(order.orderId)
     let txid
@@ -409,10 +409,12 @@ const OpenOrdersTable = () => {
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const mangoClient = useMangoStore.getState().connection.client
     const marketConfig = useMangoStore.getState().selectedMarket.config
-    const askInfo =
-      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
-    const bidInfo =
-      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
+    const askInfo = useMangoStore.getState().accountInfos[
+      marketConfig.asksKey.toString()
+    ]
+    const bidInfo = useMangoStore.getState().accountInfos[
+      marketConfig.bidsKey.toString()
+    ]
     const wallet = useMangoStore.getState().wallet.current
     const referrerPk = useMangoStore.getState().referrerPk
 

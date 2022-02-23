@@ -12,14 +12,18 @@ interface SlopeWallet {
     }
   }>
   disconnect(): Promise<{ msg: string }>
-  signTransaction(message: string): Promise<{
+  signTransaction(
+    message: string
+  ): Promise<{
     msg: string
     data: {
       publicKey?: string
       signature?: string
     }
   }>
-  signAllTransactions(messages: string[]): Promise<{
+  signAllTransactions(
+    messages: string[]
+  ): Promise<{
     msg: string
     data: {
       publicKey?: string
@@ -79,7 +83,7 @@ export class SlopeWalletAdapter extends EventEmitter implements WalletAdapter {
       this._publicKey = new PublicKey(data.publicKey)
 
       this.emit('connect')
-    } catch (error: any) {
+    } catch (error) {
       notify({
         title: 'Connection Error',
         type: 'error',

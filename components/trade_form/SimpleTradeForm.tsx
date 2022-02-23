@@ -42,8 +42,14 @@ export default function SimpleTradeForm({ initLeverage }) {
     marketConfig.baseSymbol
   )
   const market = useMangoStore((s) => s.selectedMarket.current)
-  const { side, baseSize, quoteSize, price, triggerPrice, tradeType } =
-    useMangoStore((s) => s.tradeForm)
+  const {
+    side,
+    baseSize,
+    quoteSize,
+    price,
+    triggerPrice,
+    tradeType,
+  } = useMangoStore((s) => s.tradeForm)
 
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
@@ -149,10 +155,8 @@ export default function SimpleTradeForm({ initLeverage }) {
   if (market instanceof Market && market.minOrderSize) {
     minOrderSize = market.minOrderSize.toString()
   } else if (market instanceof PerpMarket) {
-    const baseDecimals = getTokenBySymbol(
-      groupConfig,
-      marketConfig.baseSymbol
-    ).decimals
+    const baseDecimals = getTokenBySymbol(groupConfig, marketConfig.baseSymbol)
+      .decimals
     minOrderSize = new Big(market.baseLotSize)
       .div(new Big(10).pow(baseDecimals))
       .toString()
@@ -164,14 +168,10 @@ export default function SimpleTradeForm({ initLeverage }) {
   if (market instanceof Market) {
     tickSize = market.tickSize
   } else if (market instanceof PerpMarket) {
-    const baseDecimals = getTokenBySymbol(
-      groupConfig,
-      marketConfig.baseSymbol
-    ).decimals
-    const quoteDecimals = getTokenBySymbol(
-      groupConfig,
-      groupConfig.quoteSymbol
-    ).decimals
+    const baseDecimals = getTokenBySymbol(groupConfig, marketConfig.baseSymbol)
+      .decimals
+    const quoteDecimals = getTokenBySymbol(groupConfig, groupConfig.quoteSymbol)
+      .decimals
 
     const nativeToUi = new Big(10).pow(baseDecimals - quoteDecimals)
     const lotsToNative = new Big(market.quoteLotSize).div(
@@ -274,10 +274,12 @@ export default function SimpleTradeForm({ initLeverage }) {
 
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const askInfo =
-      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
-    const bidInfo =
-      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
+    const askInfo = useMangoStore.getState().accountInfos[
+      marketConfig.asksKey.toString()
+    ]
+    const bidInfo = useMangoStore.getState().accountInfos[
+      marketConfig.bidsKey.toString()
+    ]
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return

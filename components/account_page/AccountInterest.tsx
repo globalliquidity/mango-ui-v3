@@ -320,10 +320,8 @@ const AccountInterest = () => {
                   </TrBody>
                 ) : (
                   interestStats.map(([symbol, stats]) => {
-                    const decimals = getTokenBySymbol(
-                      groupConfig,
-                      symbol
-                    ).decimals
+                    const decimals = getTokenBySymbol(groupConfig, symbol)
+                      .decimals
                     return (
                       <TrBody key={symbol}>
                         <Td>

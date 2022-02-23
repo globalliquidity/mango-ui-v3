@@ -26,9 +26,8 @@ const NotificationList = () => {
       const notEnoughSolNotification = notifications.find(
         (n) => n.title && n.title.includes(notEnoughSoLMessage)
       )
-      const solBalance = walletTokens.find(
-        (t) => t.config.symbol === 'SOL'
-      )?.uiBalance
+      const solBalance = walletTokens.find((t) => t.config.symbol === 'SOL')
+        ?.uiBalance
 
       if (
         customErrorNotification &&

@@ -201,9 +201,7 @@ export default function Referral() {
         <div className="py-4 md:pb-4 md:pt-10">
           <h1 className={`mb-1`}>{t('referrals:sow-seed')}</h1>
           <div className="flex flex-col sm:flex-row items-start">
-            <p className="mb-0 mr-2">
-              {t('referrals:earn-16')}
-            </p>
+            <p className="mb-0 mr-2">{t('referrals:earn-16')}</p>
           </div>
         </div>
         <div className="bg-th-bkg-2 grid grid-cols-12 grid-flow-row gap-x-6 gap-y-8 p-4 sm:p-6 rounded-lg">

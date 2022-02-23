@@ -30,8 +30,8 @@ const PositionsTable = () => {
   const openPositions = useMangoStore(
     (s) => s.selectedMangoAccount.openPerpPositions
   )
-  const unsettledPositions =
-    useMangoStore.getState().selectedMangoAccount.unsettledPerpPositions
+  const unsettledPositions = useMangoStore.getState().selectedMangoAccount
+    .unsettledPerpPositions
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const { asPath } = useRouter()
