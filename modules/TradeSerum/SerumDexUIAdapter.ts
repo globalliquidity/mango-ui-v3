@@ -1,10 +1,7 @@
 import { Order } from '@project-serum/serum/lib/market'
-// import currency from "currency.js";
 import { SignalDispatcher, SimpleEventDispatcher } from 'strongly-typed-events'
 import { EventBus } from '@/modules/SceneGraph/EventBus'
 import Logger from '@/modules/SceneGraph/Logger'
-// import { useBalances } from "@/utils/markets";
-// import { Balances } from "@/utils/types";
 import { SmartOrderType, TradeDirection } from './Enums'
 import * as UIConstant from '@/constants/UIContants'
 import currency from 'currency.js'
