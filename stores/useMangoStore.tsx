@@ -39,12 +39,8 @@ import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 export const ENDPOINTS: EndpointInfo[] = [
   {
     name: 'mainnet',
-    url:
-      process.env.NEXT_PUBLIC_ENDPOINT ||
-      'https://mango.rpcpool.com/fdc1ee462261126d0fc96836b2bc',
-    websocket:
-      process.env.NEXT_PUBLIC_ENDPOINT ||
-      'https://mango.rpcpool.com/fdc1ee462261126d0fc96836b2bc',
+    url: process.env.NEXT_PUBLIC_ENDPOINT || 'https://mango.rpcpool.com',
+    websocket: process.env.NEXT_PUBLIC_ENDPOINT || 'https://mango.rpcpool.com',
     custom: false,
   },
   {
