@@ -85,7 +85,7 @@ export class TradeSerumScene extends Scene {
   public rowCount = 50
   public columnCount = 100
   public cellWidth = 0.5
-  c
+
   public cellHeight = 0.005
   public cellDepth = 1
 
